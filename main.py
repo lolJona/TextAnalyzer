@@ -3,6 +3,10 @@ import tkinter as tk
 from tkinter import filedialog
 from collections import Counter
 import string
+import ast
+import json
+import pprint
+import pandas as pd
 
 # DEFAULTS
 worddoc = ""
@@ -23,19 +27,29 @@ def fileopener():
 
 def analyzer():
     global worddoc
-    global count3
+    global cleancount3
     global s2l
+    global series
     nolists = str(worddoc)
     new_string = nolists.translate(str.maketrans('', '', string.punctuation))
-    s2l = new_string.split()
+    new_string_lower = new_string.lower()
+    s2l = new_string_lower.split()
     count2 = Counter(s2l)
     count3 = str(count2)
-    return count3
+    cleancount1 = count3.replace("Counter(", "")
+    cleancount2 = cleancount1.replace(")", "")
+    cleancount3 = ast.literal_eval(cleancount2)
+    print("Datatype:",type(cleancount3))
+    #count4 = pprint.pprint(count3) WIP
+    #series = pd.Series(count3)     WIP
+    #return series
+    return cleancount3
 
 def printoutput():
-    global count3
+    global cleancount3
+    #global series
     with open('output.txt', 'wt') as output:
-        output.write(count3)
+        output.write(json.dumps(cleancount3))
 
 """
 START OF THE GUI
@@ -51,11 +65,16 @@ class App(tk.Tk):
             inputtext = str(self.addtext.get("1.0",'end-1c'))
             textstr = str(inputtext)
             newtextstr = textstr.translate(str.maketrans('', '', string.punctuation))
-            nts2l = newtextstr.split()
+            newtextstr_lower = newtextstr.lower()
+            nts2l = newtextstr_lower.split()
             textcount = Counter(nts2l)
             textcount2 = str(textcount)
+            cleantextcount1 = textcount2.replace("Counter(", "")
+            cleantextcount2 = cleantextcount1.replace(")", "")
+            cleantextcount3 = ast.literal_eval(cleantextcount2)
+            #boxseries = pd.Series(textcount2)  WIP
             with open('output.txt', 'wt') as output:
-                output.write(textcount2)
+                output.write(json.dumps(cleantextcount3))
 
         #Root Window
         self.title('Text Analyzer')
