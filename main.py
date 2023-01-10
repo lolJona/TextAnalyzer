@@ -1,7 +1,7 @@
 import csv
 import tkinter as tk
 from tkinter import filedialog
-from collections import Counter
+import collections
 import string
 import ast
 import json
@@ -27,29 +27,30 @@ def fileopener():
 
 def analyzer():
     global worddoc
-    global cleancount3
+    global cleancount2
     global s2l
-    global series
+    global count3
+    global df
     nolists = str(worddoc)
     new_string = nolists.translate(str.maketrans('', '', string.punctuation))
     new_string_lower = new_string.lower()
     s2l = new_string_lower.split()
-    count2 = Counter(s2l)
-    count3 = str(count2)
-    cleancount1 = count3.replace("Counter(", "")
-    cleancount2 = cleancount1.replace(")", "")
-    cleancount3 = ast.literal_eval(cleancount2)
-    print("Datatype:",type(cleancount3))
-    #count4 = pprint.pprint(count3) WIP
-    #series = pd.Series(count3)     WIP
-    #return series
+    count2 = collections.Counter(s2l)
+    # https://stackoverflow.com/questions/31111032/transform-a-counter-object-into-a-pandas-dataframe
+    df = pd.DataFrame.from_dict(count2, orient='index').reset_index()
+    df = df.rename(columns={'index':'Word', 0:'Amount'})
+    df = df.sort_values(by='Amount', ascending=False)
+    print(df)
+    return df
+    return count3
     return cleancount3
 
 def printoutput():
-    global cleancount3
-    #global series
-    with open('output.txt', 'wt') as output:
-        output.write(json.dumps(cleancount3))
+    global count3
+    global cleancount2
+    global df
+    # https://www.tutorialspoint.com/python-how-to-write-pandas-dataframe-to-a-csv-file
+    df.to_csv("./Wordlist.csv")
 
 """
 START OF THE GUI
@@ -67,7 +68,7 @@ class App(tk.Tk):
             newtextstr = textstr.translate(str.maketrans('', '', string.punctuation))
             newtextstr_lower = newtextstr.lower()
             nts2l = newtextstr_lower.split()
-            textcount = Counter(nts2l)
+            textcount = collections.Counter(nts2l)
             textcount2 = str(textcount)
             cleantextcount1 = textcount2.replace("Counter(", "")
             cleantextcount2 = cleantextcount1.replace(")", "")
@@ -121,3 +122,9 @@ class App(tk.Tk):
 
 app = App()
 app.mainloop()
+
+# TODO: 1/9/2023
+#  Update textbox with Pandas changes.
+#  Add support for BS4 to scrape from specific sites.
+#  OOP flashcards with Dataframe results.
+#  https://www.geeksforgeeks.org/python-program-to-build-flashcard-using-class-in-python/
