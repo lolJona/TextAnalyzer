@@ -99,7 +99,8 @@ class App(tk.Tk):
         self.textdata = tk.Button(self, text="Analyze textbox", command=textboxanalyzer)
 
         # NOT OPTIONAL
-        self.convertButton = tk.Button(self, text="Examine File", command=lambda: [analyzer(), printoutput()])
+        self.convertButton = tk.Button(self, text="Examine File", command=lambda: [analyzer()])
+        self.PrintButton = tk.Button(self, text="Print to Output", command=printoutput)
         self.quitButton = tk.Button(self, text="Quit", command=self.quit)
 
         self.frame.pack()
@@ -115,6 +116,7 @@ class App(tk.Tk):
         #self.outfilename_label.pack()
         #self.outfilename_entry.pack()
         self.convertButton.pack()
+        self.PrintButton.pack()
         self.addtext.pack(expand=True)
         self.addtext.insert('end', textbox)
         self.textdata.pack()
